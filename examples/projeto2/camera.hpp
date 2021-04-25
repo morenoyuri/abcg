@@ -15,9 +15,6 @@ class Camera {
   void truck(float speed);
   void pan(float speed);
   void pany(float speed);
-  float height(float speed);
-  //Se 0, parado, se 1, subindo, se -1, descendo
-  float m_jump_direc = 0.0f;
   float m_height = 0.0f;
   float m_pany = 0.0f;
 

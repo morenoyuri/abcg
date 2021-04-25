@@ -29,6 +29,7 @@ void OpenGLWindow::handleEvent(SDL_Event& ev) {
   //Set x and y between -1 and 1
   x = ((float)mousePosition.x - width)/width;
   y = -((float)mousePosition.y - height)/height;  
+  //WASD e setas servem para mover
   if (ev.type == SDL_KEYDOWN) {
     if (ev.key.keysym.sym == SDLK_UP || ev.key.keysym.sym == SDLK_w)
       m_dollySpeed = 1.0f;
@@ -38,7 +39,6 @@ void OpenGLWindow::handleEvent(SDL_Event& ev) {
       m_truckSpeed = -1.0f;
     if (ev.key.keysym.sym == SDLK_RIGHT || ev.key.keysym.sym == SDLK_d)
       m_truckSpeed = 1.0f;
-    if (ev.key.keysym.sym == SDLK_z) m_heightSpeed = 1.0f;
   }
   if (ev.type == SDL_KEYUP) {
     if ((ev.key.keysym.sym == SDLK_UP || ev.key.keysym.sym == SDLK_w) &&
@@ -53,27 +53,15 @@ void OpenGLWindow::handleEvent(SDL_Event& ev) {
     if ((ev.key.keysym.sym == SDLK_RIGHT || ev.key.keysym.sym == SDLK_d) &&
         m_truckSpeed > 0)
       m_truckSpeed = 0.0f;
-    if (ev.key.keysym.sym == SDLK_z) m_heightSpeed = 1.0f;
   }
   if (ev.type == SDL_MOUSEMOTION) {
-    if(x < -0.3){
-      m_panSpeed = -1.0f;
-    }
-    else if(x > 0.3){
-      m_panSpeed = 1.0f;
-    }
-    else{
-      m_panSpeed = 0.0f;
-    }
-    if(y < -0.3){
-      m_panySpeed = -1.0f;
-    }
-    else if(y > 0.3){
-      m_panySpeed = 1.0f;
-    }
-    else{
-      m_panySpeed = 0.0f;
-    }
+    //Pan speed e pany speed, quando atualizadas fazem o movimento da camera
+    if(x < -0.3) m_panSpeed = -1.0f;
+    else if(x > 0.3) m_panSpeed = 1.0f;
+    else m_panSpeed = 0.0f;
+    if(y < -0.3) m_panySpeed = -1.0f;
+    else if(y > 0.3) m_panySpeed = 1.0f;
+    else m_panySpeed = 0.0f;
   }
 }
 
@@ -107,8 +95,11 @@ void OpenGLWindow::loadModel(std::string_view path) {
 }
 
 void OpenGLWindow::paintGL() {
+  //Cube scales modifica o tamanho dos cubos
   float cubeScales = 0.2f;
+  //Floor é a altura do piso
   float floor = -0.5f;
+  //Divider é o valor para um cubo ficar encostado do outro
   float divider = 4.3f;
   update();
 
@@ -154,14 +145,14 @@ void OpenGLWindow::paintGL() {
   model = glm::translate(model, glm::vec3(10/divider, floor + 1/divider, 10/divider));
   model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
   model = glm::scale(model, glm::vec3(cubeScales));
-
   glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &model[0][0]);
   glUniform1f(shininessLoc, m_shininess);
   glUniform4fv(KaLoc, 1, &m_Ka.x);
   glUniform4fv(KdLoc, 1, &m_Kd.x);
   glUniform4fv(KsLoc, 1, &m_Ks.x);
   m_model.render(m_trianglesToDraw);
-  // Draw floor
+
+  // Draw floor using 400 blocks
   for(int i = 0; i < 20; i++){
     for(int j = 0; j < 20; j++){
       model = glm::mat4(1.0);
@@ -206,5 +197,4 @@ void OpenGLWindow::update() {
   m_camera.truck(m_truckSpeed * deltaTime);
   m_camera.pan(m_panSpeed * deltaTime);
   m_camera.pany(m_panySpeed * deltaTime);
-  m_heightSpeed = m_camera.height(m_heightSpeed * deltaTime);
 }

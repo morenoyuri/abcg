@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
     auto window{std::make_unique<OpenGLWindow>()};
     window->setOpenGLSettings({.samples = 4});
     window->setWindowSettings(
-        {.width = 1000, .height = 600, .title = "Cube place"});
+        {.width = 1000, .height = 600, .title = "Projeto 2"});
 
     app.run(window);
   } catch (abcg::Exception &exception) {

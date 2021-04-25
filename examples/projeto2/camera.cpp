@@ -13,18 +13,17 @@ void Camera::computeViewMatrix() {
 }
 
 void Camera::dolly(float speed) {
-  // Compute forward vector (view direction)
+  // Calcula os vetores para depois arrumar o ângulo que foi modificado com o pany
   glm::vec3 forward_1 = glm::normalize(m_at - m_eye);
-  // Compute vector to the left
   glm::vec3 left_1 = glm::cross(m_up, forward_1);
-  // Matriz identidade
   glm::mat4 transform{glm::mat4(1.0f)};
 
-  // Rotate camera around its local y axis
+  // Rotate camera around its local x axis
   transform = glm::translate(transform, m_eye);
   transform = glm::rotate(transform, m_pany, left_1);
   transform = glm::translate(transform, -m_eye);
 
+  //Transforma o vetor para 0 graus no eixo x
   glm::vec3 m_at_diff = transform * glm::vec4(m_at, 1.0f);
 
   glm::vec3 forward = glm::normalize(m_at_diff - m_eye);
@@ -36,18 +35,17 @@ void Camera::dolly(float speed) {
 }
 
 void Camera::truck(float speed) {
-  // Compute forward vector (view direction)
+  // Calcula os vetores para depois arrumar o ângulo que foi modificado com o pany
   glm::vec3 forward_1 = glm::normalize(m_at - m_eye);
-  // Compute vector to the left
   glm::vec3 left_1 = glm::cross(m_up, forward_1);
-  // Matriz identidade
   glm::mat4 transform{glm::mat4(1.0f)};
 
-  // Rotate camera around its local y axis
+  // Rotate camera around its local x axis
   transform = glm::translate(transform, m_eye);
   transform = glm::rotate(transform, m_pany, left_1);
   transform = glm::translate(transform, -m_eye);
 
+  //Transforma o vetor para 0 graus no eixo x
   glm::vec3 m_at_diff = transform * glm::vec4(m_at, 1.0f);
 
   glm::vec3 forward = glm::normalize(m_at_diff - m_eye);
@@ -75,6 +73,7 @@ void Camera::pan(float speed) {
 }
 
 void Camera::pany(float speed) {
+  //Verifica o angulo para limitar o movimento
   if(!((m_pany + speed >= 1.5) || (m_pany + speed <= -1.5))){
     // Compute forward vector (view direction)
     glm::vec3 forward = glm::normalize(m_at - m_eye);
@@ -83,7 +82,7 @@ void Camera::pany(float speed) {
     // Matriz identidade
     glm::mat4 transform{glm::mat4(1.0f)};
 
-    // Rotate camera around its local y axis
+    // Rotate camera around its local x axis
     transform = glm::translate(transform, m_eye);
     transform = glm::rotate(transform, -speed, left);
     transform = glm::translate(transform, -m_eye);
@@ -93,25 +92,3 @@ void Camera::pany(float speed) {
   }
 }
 
-float Camera::height(float speed) {
-  m_at += m_up * speed * m_velocity;
-  m_eye += m_up * speed * m_velocity;
-  m_height += m_velocity * speed;
-  if(speed <= 0.0f){
-    m_velocity = 1.0f;
-  }
-  else if(m_velocity > 0.2f){
-    m_velocity -= 0.1f;
-  }
-  if(m_height >= 0.6f){
-    m_jump_direc = -1.0f;
-  }
-  if(m_height <= 0.0f && speed < 0.0f){
-    m_jump_direc = 0.0f;
-  }
-  if(m_height < 0.6f && speed > 0.0f){
-    m_jump_direc = 1.0f;
-  }
-  computeViewMatrix();
-  return m_jump_direc;
-}
